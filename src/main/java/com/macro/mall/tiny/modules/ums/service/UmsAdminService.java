@@ -75,7 +75,7 @@ public interface UmsAdminService extends IService<UmsAdmin> {
     /**
      * 修改密码
      */
-    int updatePassword(UpdateAdminPasswordParam updatePasswordParam);
+    boolean updatePassword(UpdateAdminPasswordParam updatePasswordParam);
 
     /**
      * 获取用户信息

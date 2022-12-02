@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.macro.mall.tiny.common.exception.ApiException;
 import com.macro.mall.tiny.common.exception.Asserts;
 import com.macro.mall.tiny.domain.AdminUserDetails;
 import com.macro.mall.tiny.modules.ums.dto.UmsAdminParam;
@@ -231,26 +232,28 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
     }
 
     @Override
-    public int updatePassword(UpdateAdminPasswordParam param) {
+    public boolean updatePassword(UpdateAdminPasswordParam param) {
         if(StrUtil.isEmpty(param.getUsername())
                 ||StrUtil.isEmpty(param.getOldPassword())
                 ||StrUtil.isEmpty(param.getNewPassword())){
-            return -1;
+            throw new ApiException("提交参数不合法");
         }
         QueryWrapper<UmsAdmin> wrapper = new QueryWrapper<>();
         wrapper.lambda().eq(UmsAdmin::getUsername,param.getUsername());
         List<UmsAdmin> adminList = list(wrapper);
         if(CollUtil.isEmpty(adminList)){
-            return -2;
+            throw new ApiException("找不到该用户");
         }
         UmsAdmin umsAdmin = adminList.get(0);
         if(!passwordEncoder.matches(param.getOldPassword(),umsAdmin.getPassword())){
-            return -3;
+            throw new ApiException("旧密码错误");
         }
         umsAdmin.setPassword(passwordEncoder.encode(param.getNewPassword()));
-        updateById(umsAdmin);
-        getCacheService().delAdmin(umsAdmin.getId());
-        return 1;
+        boolean res = updateById(umsAdmin);
+        if (res){
+            getCacheService().delAdmin(umsAdmin.getId());
+        }
+        return res;
     }
 
     @Override

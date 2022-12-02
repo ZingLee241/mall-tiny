@@ -13,93 +13,66 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
  * 后台菜单管理Controller
  * Created by macro on 2020/2/4.
  */
-@Controller
+@RestController
 @Api(tags = "UmsMenuController")
 @Tag(name = "UmsMenuController",description = "后台菜单管理")
 @RequestMapping("/menu")
 public class UmsMenuController {
 
-    @Autowired
+    @Resource
     private UmsMenuService menuService;
 
     @ApiOperation("添加后台菜单")
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    @ResponseBody
-    public CommonResult create(@RequestBody UmsMenu umsMenu) {
-        boolean success = menuService.create(umsMenu);
-        if (success) {
-            return CommonResult.success(null);
-        } else {
-            return CommonResult.failed();
-        }
+    @PostMapping("/create")
+    public boolean create(@RequestBody UmsMenu umsMenu) {
+        return  menuService.create(umsMenu);
     }
 
     @ApiOperation("修改后台菜单")
-    @RequestMapping(value = "/update/{id}", method = RequestMethod.POST)
-    @ResponseBody
-    public CommonResult update(@PathVariable Long id,
+    @PostMapping("/update/{id}")
+    public boolean update(@PathVariable Long id,
                                @RequestBody UmsMenu umsMenu) {
-        boolean success = menuService.update(id, umsMenu);
-        if (success) {
-            return CommonResult.success(null);
-        } else {
-            return CommonResult.failed();
-        }
+        return menuService.update(id, umsMenu);
     }
 
     @ApiOperation("根据ID获取菜单详情")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public CommonResult<UmsMenu> getItem(@PathVariable Long id) {
-        UmsMenu umsMenu = menuService.getById(id);
-        return CommonResult.success(umsMenu);
+    @PostMapping("/{id}")
+    public UmsMenu getItem(@PathVariable Long id) {
+        return menuService.getById(id);
     }
 
     @ApiOperation("根据ID删除后台菜单")
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
-    @ResponseBody
-    public CommonResult delete(@PathVariable Long id) {
-        boolean success = menuService.removeById(id);
-        if (success) {
-            return CommonResult.success(null);
-        } else {
-            return CommonResult.failed();
-        }
+    @PostMapping("/delete/{id}")
+    
+    public boolean delete(@PathVariable Long id) {
+        return menuService.removeById(id);
     }
 
     @ApiOperation("分页查询后台菜单")
-    @RequestMapping(value = "/list/{parentId}", method = RequestMethod.GET)
-    @ResponseBody
-    public CommonResult<CommonPage<UmsMenu>> list(@PathVariable Long parentId,
+    @GetMapping(value = "/list/{parentId}")
+    public CommonPage<UmsMenu> list(@PathVariable Long parentId,
                                                   @RequestParam(value = "pageSize", defaultValue = "5") Integer pageSize,
                                                   @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
         Page<UmsMenu> menuList = menuService.list(parentId, pageSize, pageNum);
-        return CommonResult.success(CommonPage.restPage(menuList));
+        return CommonPage.restPage(menuList);
     }
 
     @ApiOperation("树形结构返回所有菜单列表")
-    @RequestMapping(value = "/treeList", method = RequestMethod.GET)
-    @ResponseBody
-    public CommonResult<List<UmsMenuNode>> treeList() {
-        List<UmsMenuNode> list = menuService.treeList();
-        return CommonResult.success(list);
+    @GetMapping(value = "/treeList")
+    public List<UmsMenuNode> treeList() {
+        return  menuService.treeList();
     }
 
     @ApiOperation("修改菜单显示状态")
-    @RequestMapping(value = "/updateHidden/{id}", method = RequestMethod.POST)
-    @ResponseBody
-    public CommonResult updateHidden(@PathVariable Long id, @RequestParam("hidden") Integer hidden) {
-        boolean success = menuService.updateHidden(id, hidden);
-        if (success) {
-            return CommonResult.success(null);
-        } else {
-            return CommonResult.failed();
-        }
+    @PostMapping(value = "/updateHidden/{id}")
+    public boolean updateHidden(@PathVariable Long id, Integer hidden) {
+        return menuService.updateHidden(id, hidden);
     }
 }
