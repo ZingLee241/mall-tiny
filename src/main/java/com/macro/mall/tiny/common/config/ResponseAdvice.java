@@ -1,8 +1,7 @@
 package com.macro.mall.tiny.common.config;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.macro.mall.tiny.common.api.CommonResult;
+import com.macro.mall.tiny.common.api.Result;
 import lombok.SneakyThrows;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -30,12 +29,12 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public Object beforeBodyWrite(Object res, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
         if (res instanceof String){
-            return objectMapper.writeValueAsString(CommonResult.success(res));
-        }else if(res instanceof CommonResult){
+            return objectMapper.writeValueAsString(Result.success(res));
+        }else if(res instanceof Result){
             return res;
         }else if (res instanceof Boolean){
-            return (boolean)res?CommonResult.success(null):CommonResult.failed();
+            return (boolean)res?Result.success(null):Result.error();
         }
-        return CommonResult.success(res);
+        return Result.success(res);
     }
 }

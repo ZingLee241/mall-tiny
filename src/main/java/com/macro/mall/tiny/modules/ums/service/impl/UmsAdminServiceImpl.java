@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.macro.mall.tiny.common.exception.ApiException;
 import com.macro.mall.tiny.common.exception.Asserts;
-import com.macro.mall.tiny.common.result.ResultCode;
 import com.macro.mall.tiny.domain.AdminUserDetails;
 import com.macro.mall.tiny.modules.ums.dto.UmsAdminParam;
 import com.macro.mall.tiny.modules.ums.dto.UpdateAdminPasswordParam;
@@ -25,7 +24,6 @@ import com.macro.mall.tiny.security.util.SpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -219,6 +217,9 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
             adminRoleRelationService.saveBatch(list);
         }
         getCacheService().delResourceList(adminId);
+        if (count == 0) {
+            throw new ApiException("分配失败！");
+        }
         return count;
     }
 

@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.macro.mall.tiny.common.api.CommonPage;
 import com.macro.mall.tiny.common.exception.ApiException;
-import com.macro.mall.tiny.common.result.ResultCode;
+import com.macro.mall.tiny.common.api.ResultCode;
 import com.macro.mall.tiny.modules.ums.dto.UmsAdminLoginParam;
 import com.macro.mall.tiny.modules.ums.dto.UmsAdminParam;
 import com.macro.mall.tiny.modules.ums.dto.UpdateAdminPasswordParam;
@@ -136,7 +136,7 @@ public class UmsAdminController {
     }
 
     @ApiOperation("修改帐号状态")
-    @RequestMapping(value = "/updateStatus/{id}", method = RequestMethod.POST)
+    @PostMapping(value = "/updateStatus/{id}")
     public boolean updateStatus(@PathVariable Long id,@RequestParam(value = "status") Integer status) {
         UmsAdmin umsAdmin = new UmsAdmin();
         umsAdmin.setStatus(status);
@@ -144,14 +144,9 @@ public class UmsAdminController {
     }
 
     @ApiOperation("给用户分配角色")
-    @RequestMapping( "/role/update")
-    public int updateRole(@RequestParam("adminId") Long adminId,
-                                   @RequestParam("roleIds") List<Long> roleIds) {
-        int count = adminService.updateRole(adminId, roleIds);
-        if (count == 0) {
-            throw new ApiException("分配失败！");
-        }
-        return count;
+    @PostMapping( "/role/update")
+    public int updateRole(@RequestParam("adminId") Long adminId, @RequestParam("roleIds") List<Long> roleIds) {
+        return adminService.updateRole(adminId, roleIds);
     }
 
     @ApiOperation("获取指定用户的角色")

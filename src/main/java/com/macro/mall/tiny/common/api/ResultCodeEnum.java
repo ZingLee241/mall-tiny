@@ -1,4 +1,4 @@
-package com.macro.mall.tiny.common.result;
+package com.macro.mall.tiny.common.api;
 
 import lombok.Getter;
 

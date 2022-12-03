@@ -1,4 +1,4 @@
-package com.macro.mall.tiny.common.result;
+package com.macro.mall.tiny.common.api;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -57,7 +57,7 @@ public class Result<T> implements Serializable {
      * @return 通用返回Result
      */
     public static <T> Result<T> error() {
-        return new Result<>(ResultCode.FAILED);
+        return new Result<>(ResultCode.ERROR);
     }
 
     /**
@@ -67,7 +67,7 @@ public class Result<T> implements Serializable {
      * @return 通用返回Result
      */
     public static <T> Result<T> error(String message) {
-        return new Result<>(ResultCode.FAILED.getCode(), message);
+        return new Result<>(ResultCode.ERROR.getCode(), message);
     }
 
     /**
@@ -93,6 +93,19 @@ public class Result<T> implements Serializable {
      */
     public static <T> Result<T> error(ResultCode resultCode) {
         return new Result<>(resultCode);
+    }
+
+    /**
+     * 失败，传入IErrorCode通用错误码接口
+     *
+     * @param resultCode CodeMsg,参数如下:
+     *                   <p> code 状态码
+     *                   <p> message  返回消息
+     * @param <T>        返回类泛型
+     * @return 通用返回Result
+     */
+    public static <T> Result<T> error(IErrorCode resultCode) {
+        return new Result<>(resultCode.getCode(), resultCode.getMessage());
     }
 
 

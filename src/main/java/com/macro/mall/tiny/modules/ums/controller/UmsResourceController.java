@@ -2,7 +2,6 @@ package com.macro.mall.tiny.modules.ums.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.macro.mall.tiny.common.api.CommonPage;
-import com.macro.mall.tiny.common.api.CommonResult;
 import com.macro.mall.tiny.modules.ums.model.UmsResource;
 import com.macro.mall.tiny.modules.ums.service.UmsResourceService;
 import com.macro.mall.tiny.security.component.DynamicSecurityMetadataSource;
@@ -47,9 +46,8 @@ public class UmsResourceController {
 
     @ApiOperation("根据ID获取资源详情")
     @GetMapping(value = "/{id}")
-    public CommonResult<UmsResource> getItem(@PathVariable Long id) {
-        UmsResource umsResource = resourceService.getById(id);
-        return CommonResult.success(umsResource);
+    public UmsResource getItem(@PathVariable Long id) {
+        return resourceService.getById(id);
     }
 
     @ApiOperation("根据ID删除后台资源")

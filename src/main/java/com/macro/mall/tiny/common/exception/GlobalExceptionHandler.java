@@ -1,6 +1,7 @@
 package com.macro.mall.tiny.common.exception;
 
-import com.macro.mall.tiny.common.api.CommonResult;
+import com.macro.mall.tiny.common.api.Result;
+import com.macro.mall.tiny.common.api.ResultCode;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -18,16 +19,16 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(value = ApiException.class)
-    public CommonResult handle(ApiException e) {
+    public Result<Object> handle(ApiException e) {
         if (e.getErrorCode() != null) {
-            return CommonResult.failed(e.getErrorCode());
+            return Result.error(e.getErrorCode());
         }
-        return CommonResult.failed(e.getMessage());
+        return Result.error(e.getMessage());
     }
 
     @ResponseBody
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public CommonResult handleValidException(MethodArgumentNotValidException e) {
+    public Result<Object> handleValidException(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         String message = null;
         if (bindingResult.hasErrors()) {
@@ -36,12 +37,12 @@ public class GlobalExceptionHandler {
                 message = fieldError.getField()+fieldError.getDefaultMessage();
             }
         }
-        return CommonResult.validateFailed(message);
+        return Result.error(ResultCode.VALIDATE_FAILED.getCode(),message);
     }
 
     @ResponseBody
     @ExceptionHandler(value = BindException.class)
-    public CommonResult handleValidException(BindException e) {
+    public Result<Object> handleValidException(BindException e) {
         BindingResult bindingResult = e.getBindingResult();
         String message = null;
         if (bindingResult.hasErrors()) {
@@ -50,6 +51,6 @@ public class GlobalExceptionHandler {
                 message = fieldError.getField()+fieldError.getDefaultMessage();
             }
         }
-        return CommonResult.validateFailed(message);
+        return Result.error(ResultCode.VALIDATE_FAILED.getCode(),message);
     }
 }
