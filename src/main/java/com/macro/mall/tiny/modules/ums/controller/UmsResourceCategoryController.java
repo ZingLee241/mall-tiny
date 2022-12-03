@@ -1,13 +1,10 @@
 package com.macro.mall.tiny.modules.ums.controller;
 
-import com.macro.mall.tiny.common.api.CommonResult;
 import com.macro.mall.tiny.modules.ums.model.UmsResourceCategory;
 import com.macro.mall.tiny.modules.ums.service.UmsResourceCategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -47,12 +44,7 @@ public class UmsResourceCategoryController {
 
     @ApiOperation("根据ID删除后台资源")
     @PostMapping(value = "/delete/{id}")
-    public CommonResult delete(@PathVariable Long id) {
-        boolean success = resourceCategoryService.removeById(id);
-        if (success) {
-            return CommonResult.success(null);
-        } else {
-            return CommonResult.failed();
-        }
+    public boolean delete(@PathVariable Long id) {
+        return resourceCategoryService.removeById(id);
     }
 }

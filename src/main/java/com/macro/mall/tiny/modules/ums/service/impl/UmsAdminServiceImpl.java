@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.macro.mall.tiny.common.exception.ApiException;
 import com.macro.mall.tiny.common.exception.Asserts;
+import com.macro.mall.tiny.common.result.ResultCode;
 import com.macro.mall.tiny.domain.AdminUserDetails;
 import com.macro.mall.tiny.modules.ums.dto.UmsAdminParam;
 import com.macro.mall.tiny.modules.ums.dto.UpdateAdminPasswordParam;
@@ -36,10 +37,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 后台管理员管理Service实现类
@@ -48,17 +51,17 @@ import java.util.List;
 @Service
 public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> implements UmsAdminService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UmsAdminServiceImpl.class);
-    @Autowired
+    @Resource
     private JwtTokenUtil jwtTokenUtil;
-    @Autowired
+    @Resource
     private PasswordEncoder passwordEncoder;
-    @Autowired
+    @Resource
     private UmsAdminLoginLogMapper loginLogMapper;
-    @Autowired
+    @Resource
     private UmsAdminRoleRelationService adminRoleRelationService;
-    @Autowired
+    @Resource
     private UmsRoleMapper roleMapper;
-    @Autowired
+    @Resource
     private UmsResourceMapper resourceMapper;
 
     @Override
@@ -129,9 +132,15 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
         UmsAdminLoginLog loginLog = new UmsAdminLoginLog();
         loginLog.setAdminId(admin.getId());
         loginLog.setCreateTime(new Date());
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
-        loginLog.setIp(request.getRemoteAddr());
+        Optional<ServletRequestAttributes> optional = Optional.ofNullable((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
+        HttpServletRequest request = null;
+        if (optional.isPresent()){
+            request = optional.get().getRequest();
+        }else {
+            throw new ApiException("获取不到请求的属性！");
+        }
+
+        loginLog.setIp(request.getHeader("x-real-ip"));//获取nginx中配置的 ip转发
         loginLogMapper.insert(loginLog);
     }
 
