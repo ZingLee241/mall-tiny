@@ -21,6 +21,8 @@ import com.macro.mall.tiny.modules.ums.service.UmsAdminRoleRelationService;
 import com.macro.mall.tiny.modules.ums.service.UmsAdminService;
 import com.macro.mall.tiny.security.util.JwtTokenUtil;
 import com.macro.mall.tiny.security.util.SpringUtil;
+import net.dreamlu.mica.ip2region.core.Ip2regionSearcher;
+import net.dreamlu.mica.ip2region.core.IpInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -61,6 +63,8 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
     private UmsRoleMapper roleMapper;
     @Resource
     private UmsResourceMapper resourceMapper;
+    @Resource
+    private Ip2regionSearcher ip2regionSearcher;
 
     @Override
     public UmsAdmin getAdminByUsername(String username) {
@@ -131,14 +135,20 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
         loginLog.setAdminId(admin.getId());
         loginLog.setCreateTime(new Date());
         Optional<ServletRequestAttributes> optional = Optional.ofNullable((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
-        HttpServletRequest request = null;
+        String ip = null,userAgent = null;
         if (optional.isPresent()){
-            request = optional.get().getRequest();
+            HttpServletRequest request = optional.get().getRequest();
+            ip = request.getHeader("x-real-ip");
         }else {
-            throw new ApiException("获取不到请求的属性！");
+            log.error("获取不到该请求的ip地址！");
         }
-
-        loginLog.setIp(request.getHeader("x-real-ip"));//获取nginx中配置的 ip转发
+        IpInfo ipInfo = ip2regionSearcher.memorySearch(ip);
+        if (ipInfo == null){
+            log.error("获取不到ip："+ip+"的真实地址信息");
+        }else{
+            loginLog.setAddress(ipInfo.getAddress());
+        }
+        loginLog.setIp(ip);//获取nginx中配置的 ip转发
         loginLogMapper.insert(loginLog);
     }
 
