@@ -1,6 +1,7 @@
 package com.macro.mall.tiny.modules.ums.dto;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotEmpty;
  * Created by macro on 2018/4/26.
  */
 @Data
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class UmsAdminLoginParam {
     @NotEmpty

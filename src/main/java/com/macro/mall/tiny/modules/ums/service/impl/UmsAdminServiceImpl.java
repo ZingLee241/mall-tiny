@@ -134,21 +134,27 @@ public class UmsAdminServiceImpl extends ServiceImpl<UmsAdminMapper,UmsAdmin> im
         UmsAdminLoginLog loginLog = new UmsAdminLoginLog();
         loginLog.setAdminId(admin.getId());
         loginLog.setCreateTime(new Date());
-        Optional<ServletRequestAttributes> optional = Optional.ofNullable((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         String ip = null,userAgent = null;
-        if (optional.isPresent()){
-            HttpServletRequest request = optional.get().getRequest();
+        IpInfo ipInfo = null;
+        try {
+            if (attributes==null){
+                throw new ApiException("获取请求参数失败！");
+            }
+            HttpServletRequest request = attributes.getRequest();
             ip = request.getHeader("x-real-ip");
-        }else {
-            log.error("获取不到该请求的ip地址！");
-        }
-        IpInfo ipInfo = ip2regionSearcher.memorySearch(ip);
-        if (ipInfo == null){
-            log.error("获取不到ip："+ip+"的真实地址信息");
-        }else{
+            if (ip==null){
+                throw new ApiException("获取不到ip地址！");
+            }
+            ipInfo = ip2regionSearcher.memorySearch(ip);
+            if (ipInfo == null){
+                throw new ApiException("获取不到ip的真实信息！");
+            }
+            loginLog.setIp(ip);//获取nginx中配置的 ip转发
             loginLog.setAddress(ipInfo.getAddress());
+        }catch (ApiException e){
+            log.error(e.getMessage());
         }
-        loginLog.setIp(ip);//获取nginx中配置的 ip转发
         loginLogMapper.insert(loginLog);
     }
 

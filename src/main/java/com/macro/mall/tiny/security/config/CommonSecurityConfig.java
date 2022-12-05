@@ -2,6 +2,7 @@ package com.macro.mall.tiny.security.config;
 
 import com.macro.mall.tiny.security.component.*;
 import com.macro.mall.tiny.security.util.JwtTokenUtil;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * 包括通用Bean、Security通用Bean及动态权限通用Bean
  * Created by macro on 2022/5/20.
  */
-@Configuration
+@SpringBootConfiguration
 public class CommonSecurityConfig {
 
     @Bean
@@ -43,6 +44,10 @@ public class CommonSecurityConfig {
     @Bean
     public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter(){
         return new JwtAuthenticationTokenFilter();
+    }
+    @Bean
+    public BasicFilter basicFilter(){
+        return new BasicFilter();
     }
 
     @Bean

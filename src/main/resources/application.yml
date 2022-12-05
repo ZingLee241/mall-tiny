@@ -4,7 +4,7 @@ spring:
   application:
     name: mall-tiny
   profiles:
-    active: prod
+    active: dev
 #  main:
 #    allow-circular-references: true
   mvc:
@@ -24,6 +24,10 @@ jwt:
   secret: mall-admin-secret #JWT加解密使用的密钥
   expiration: 604800 #JWT的超期限时间(60*60*24*7)
   tokenHead: 'Bearer '  #JWT负载中拿到开头
+basic:
+  tokenHeader: Authorization #存储的请求头
+  tokenHead: 'Basic '  #负载中拿到开头
+  targetUrl: '/admin/login' #仅对目标URL进行basic鉴权过滤
 
 redis:
   database: mall
